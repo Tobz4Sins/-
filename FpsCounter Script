@@ -1,0 +1,77 @@
+local Converted = {
+	["_fps_counter"] = Instance.new("ScreenGui");
+	["_fps_label"] = Instance.new("TextLabel");
+	["_counter_main"] = Instance.new("LocalScript");
+	["_update_rate"] = Instance.new("NumberValue");
+}
+
+-- Properties:
+
+Converted["_fps_counter"].Name = "fps_counter"
+Converted["_fps_counter"].Parent = game:GetService("CoreGui")
+
+Converted["_fps_label"].Font = Enum.Font.SourceSans
+Converted["_fps_label"].Text = "0 FPS"
+Converted["_fps_label"].TextColor3 = Color3.fromRGB(255, 255, 255)
+Converted["_fps_label"].TextScaled = true
+Converted["_fps_label"].TextSize = 14
+Converted["_fps_label"].TextStrokeTransparency = 0.5
+Converted["_fps_label"].TextWrapped = true
+Converted["_fps_label"].TextXAlignment = Enum.TextXAlignment.Right
+Converted["_fps_label"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Converted["_fps_label"].BackgroundTransparency = 1
+Converted["_fps_label"].BorderColor3 = Color3.fromRGB(27.000002190470695, 42.000001296401024, 53.000004440546036)
+Converted["_fps_label"].Position = UDim2.new(0.811484396, 0, 0.964095891, 0)
+Converted["_fps_label"].Size = UDim2.new(0.188501418, 0, 0.0358803421, 0)
+Converted["_fps_label"].Name = "fps_label"
+Converted["_fps_label"].Parent = Converted["_fps_counter"]
+
+Converted["_update_rate"].Value = 1
+Converted["_update_rate"].Name = "update_rate"
+Converted["_update_rate"].Parent = Converted["_fps_counter"]
+
+-- Fake Module Scripts:
+
+local fake_module_scripts = {}
+
+
+-- Fake Local Scripts:
+
+local function NGJTYLS_fake_script() -- Fake Script: StarterGui.fps_counter.counter_main
+    local script = Instance.new("LocalScript")
+    script.Name = "counter_main"
+    script.Parent = Converted["_fps_counter"]
+    local req = require
+    local require = function(obj)
+        local fake = fake_module_scripts[obj]
+        if fake then
+            return fake()
+        end
+        return req(obj)
+    end
+
+	local services = {
+		["run_service"] = game:GetService("RunService"),
+	}
+	
+	local gui = script.Parent
+	local fps_label = gui:WaitForChild("fps_label")
+	local update_rate = gui:WaitForChild("update_rate").Value
+	update_rate = (update_rate < 0.25 or update_rate > 2) and 1 or update_rate
+	
+	local frames_rendered = 0
+	local last_update = tick() - update_rate
+	local multiplier = 1 / update_rate
+	services["run_service"].RenderStepped:Connect(
+		function()
+			if tick() - last_update >= update_rate then
+				fps_label.Text = tostring(math.round(frames_rendered * multiplier)).. " FPS"
+				frames_rendered = 0; last_update = tick()
+			else
+				frames_rendered += 1
+			end
+		end
+	)
+end
+
+coroutine.wrap(NGJTYLS_fake_script)()
